@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    font-family: serif, 'Courier New', Courier, monospace;
+}
+
+/* Style the scrollbar */
+::-webkit-scrollbar {
+    width: 5px;
+    /* Set the width of the scrollbar */
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #ffffff;
+    /* Color of the track */
+    border: 1px solid rgb(190, 190, 190);
+    border-radius: 10px;
+
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #000;
+    /* Color of the handle */
+    border-radius: 15px;
+
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+    /* Color of the handle when hovered */
+}
+
+/* Style the scrollbar in Firefox */
+/* Track */
+* {
+    scrollbar-color: #f1f1f1 #888;
+}
+
+/* Handle on hover */
+* {
+    scrollbar-color: #555 #888;
+}
+
+
+.custum-scroll::-webkit-scrollbar {
+    display: none;
+}
