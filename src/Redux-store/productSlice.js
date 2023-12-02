@@ -1,42 +1,58 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+
+const fetchProductData = createAsyncThunk("products/fetchProductData", async (apiUrl) => {
+  const response = await fetch(`https://dummyjson.com/products/${apiUrl}`);
+  const data = response.json();
+  return data;
+});
 
 const initialState = {
-  data: [],
-  item: [],
+  products: [],
+  category: { id: "category", name: "Category", options: [] },
+  brand: { id: "brand", name: "Brand", options: [] },
+  status: "idle",
 };
 
 const productSlice = createSlice({
-  name: "product",
+  name: "products",
   initialState,
   reducers: {
-    addToCart: (state, action) => {
-      // Check if the item is already in the cart
-      const existingItem = state.item.find((item) => item._id === action.payload.id);
-
-      // If the item is not in the cart, add it
-      if (!existingItem) {
-        state.data.push(action.payload);
-        state.item.push({ _id: action.payload.id, qty: 1 });
-      } else {
-        // If the item is already in the cart, update its quantity
-        state.item = state.item.map((item) => (item._id === action.payload.id ? { ...item, qty: item.qty + 1 } : item));
+    toggleFilter: (state, action) => {
+      if (state.category.id === action.payload.filterId) {
+        // Modify the draft directly within the Immer producer
+        state.category.options = state.category.options.map((option) =>
+          option.value === action.payload.value ? { ...option, checked: !option.checked } : option
+        );
+      } else if (state.brand.id === action.payload.filterId) {
+        // Modify the draft directly within the Immer producer
+        state.brand.options = state.brand.options.map((option) =>
+          option.value === action.payload.value ? { ...option, checked: !option.checked } : option
+        );
       }
-    },
+    }
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchProductData.pending, (state, action) => {
+        state.status = "loading...";
+      })
+      .addCase(fetchProductData.fulfilled, (state, action) => {
+        state.status = "Succeeded";
+        state.products = action.payload.products;
+        state.category.options = Array.from(new Set(action.payload.products.map((item) => item.category))).map((item) => {
+          return { value: item, label: item, checked: false };
+        });
 
-    increaseQty: (state, action) => {
-      state.item = state.item.map((item) => (item._id === action.payload ? { ...item, qty: item.qty + 1 } : item));
-    },
-
-    decreaseQty: (state, action) => {
-      state.item = state.item.map((item) => (item._id === action.payload && item.qty !== 1 ? { ...item, qty: item.qty - 1 } : item));
-    },
-
-    removeItem: (state, action) => {
-      state.data = state.data.filter((item) => item.id != action.payload);
-      state.item = state.item.filter((item) => item._id != action.payload);
-    },
+        state.brand.options = Array.from(new Set(action.payload.products.map((item) => item.brand))).map((item) => {
+          return { value: item, label: item, checked: false };
+        });
+      })
+      .addCase(fetchProductData.rejected, (state, action) => {
+        state.status = "Rejected";
+      });
   },
 });
 
-export const { addToCart, increaseQty, decreaseQty, removeItem } = productSlice.actions;
 export default productSlice.reducer;
+export { fetchProductData };
+export const { toggleFilter } = productSlice.actions;

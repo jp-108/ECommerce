@@ -3,6 +3,8 @@ import { Dialog, Disclosure, Menu, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon } from "@heroicons/react/20/solid";
 import ProductCard from "../Cards/ProductCard";
+import { fetchProductData, toggleFilter } from "../../Redux-store/productSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const sortOptions = [
   { name: "Best Rating", current: false },
@@ -16,43 +18,16 @@ function classNames(...classes) {
 
 export default function ProductList({ apiUrl }) {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [product, setProduct] = useState([]);
-  const [filters, setFilters] = useState([]);
   const [selectedBrand, setSelectedBrand] = useState([]);
   const [filterProduct, setFilterProduct] = useState([]);
+  const dispatch = useDispatch();
+  const product = useSelector((state) => state.productSlice.products);
+  const brand = useSelector((state) => state.productSlice.brand);
+  const category = useSelector((state) => state.productSlice.category);
+  const filters = [brand, category];
 
   useEffect(() => {
-    fetch(`https://dummyjson.com/products/${apiUrl}`)
-      .then((res) => res.json())
-      .then((res) => {
-        setProduct(res.products);
-      });
-  }, []);
-
-  useEffect(() => {
-    fetch(`https://dummyjson.com/products/${apiUrl}`)
-      .then((res) => res.json())
-      .then((res) => {
-        const brand = Array.from(new Set(res.products.map((item) => item.brand))).map((item) => {
-          return { value: item, label: item, checked: false };
-        });
-        const category = Array.from(new Set(res.products.map((item) => item.category))).map((item) => {
-          return { value: item, label: item, checked: false };
-        });
-
-        setFilters([
-          {
-            id: "Brand",
-            name: "Brand",
-            options: brand,
-          },
-          {
-            id: "Category",
-            name: "Category",
-            options: category,
-          },
-        ]);
-      });
+    dispatch(fetchProductData(apiUrl));
   }, []);
 
   useEffect(() => {
@@ -63,20 +38,10 @@ export default function ProductList({ apiUrl }) {
     setFilterProduct(selectedBrand.length > 0 ? (filterByBoth.length > 0 ? filterByBoth : filterByBrand.length > 0 && filterByCategory.length == 0 ? filterByBrand : filterByBrand == 0 ? filterByCategory : []) : product);
   }, [selectedBrand, product]);
 
-  const handleOnChange = (e, id) => {
-    setSelectedBrand((prevBrands) => (prevBrands.includes(e.target.value) ? prevBrands.filter((brand) => brand != e.target.value) : [...prevBrands, e.target.value]));
+  const handleOnChange = (filterId, value, option) => {
+    setSelectedBrand((prevBrands) => (prevBrands.includes(value) ? prevBrands.filter((brand) => brand != value) : [...prevBrands, value]));
 
-    setFilters((prevVal) => {
-      const newState = [...prevVal];
-      const newOptions = [...newState[prevVal.indexOf(prevVal.find((e) => e.id == id))].options];
-      const indexToUpdate = newOptions.findIndex((option) => option.value === e.target.value);
-
-      if (indexToUpdate !== -1) {
-        newOptions[indexToUpdate] = { ...newOptions[indexToUpdate], checked: !newOptions[indexToUpdate].checked };
-        newState[prevVal.indexOf(prevVal.find((e) => e.id == id))] = { ...newState[prevVal.indexOf(prevVal.find((e) => e.id == id))], options: newOptions };
-      }
-      return newState;
-    });
+    dispatch(toggleFilter({ filterId, value }));
   };
 
   const handleSort = (option) => {
@@ -131,7 +96,7 @@ export default function ProductList({ apiUrl }) {
                               <div className='space-y-6'>
                                 {section.options.map((option, optionIdx) => (
                                   <div key={option.value} className='flex items-center'>
-                                    <input onChange={(e) => handleOnChange(e, section.id, option)} id={`filter-mobile-${section.id}-${optionIdx}`} name={`${section.id}`} value={option.value} type='checkbox' defaultChecked={option.checked} className='h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500' />
+                                    <input onChange={() => handleOnChange(section.id, option.value, option)} id={`filter-mobile-${section.id}-${optionIdx}`} name={`${section.id}`} value={option.value} type='checkbox' defaultChecked={option.checked} className='h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500' />
                                     <label htmlFor={`filter-mobile-${section.id}-${optionIdx}`} className='ml-3 capitalize min-w-0 flex-1 text-gray-500'>
                                       {option.label}
                                     </label>
@@ -215,7 +180,7 @@ export default function ProductList({ apiUrl }) {
                           <div className='space-y-4'>
                             {section.options.map((option, optionIdx) => (
                               <div key={option.value} className='flex items-center'>
-                                <input onChange={(e) => handleOnChange(e, section.id, option)} id={`filter-${section.id}-${optionIdx}`} name={`${section.id}`} defaultValue={option.value} type='checkbox' defaultChecked={option.checked} className='h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500' />
+                                <input onChange={(e) => handleOnChange(section.id, option.value, option)} id={`filter-${section.id}-${optionIdx}`} name={`${section.id}`} defaultValue={option.value} type='checkbox' defaultChecked={option.checked} className='h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500' />
                                 <label htmlFor={`filter-${section.id}-${optionIdx}`} className='ml-3 capitalize text-sm text-gray-600'>
                                   {option.label}
                                 </label>

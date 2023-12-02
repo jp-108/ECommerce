@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
-import { addToCart } from "../../Redux-store/productSlice";
+import { addToCart } from "../../Redux-store/cartSlice";
 import { ChevronDoubleLeftIcon } from "@heroicons/react/24/outline";
+
 
 function Product() {
   const dispatch = useDispatch();
@@ -14,6 +15,7 @@ function Product() {
     fetch(`https://dummyjson.com/products/${params.id}`)
       .then((res) => res.json())
       .then((res) => setItem(res));
+      
   }, []);
 
   return (

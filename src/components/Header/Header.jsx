@@ -59,7 +59,7 @@ export default () => {
 
   const [open, setOpen] = useState(false);
 
-  const product = useSelector((state) => state.productSlice.data);
+  const product = useSelector((state) => state.cartSlice.data);
 
   const cartClickHandler = () => {
     setOpen(true);

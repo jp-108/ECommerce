@@ -2,12 +2,12 @@ import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ChevronDoubleDownIcon, ChevronDoubleUpIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useSelector, useDispatch } from "react-redux";
-import { increaseQty, decreaseQty, removeItem } from "../../Redux-store/productSlice";
+import { increaseQty, decreaseQty, removeItem } from "../../Redux-store/cartSlice";
 import { Link } from "react-router-dom";
 
 export default function Cart({ open, setOpen }) {
-  const products = useSelector((state) => state.productSlice.data);
-  const item = useSelector((state) => state.productSlice.item);
+  const cartItems = useSelector((state) => state.cartSlice.data);
+  const item = useSelector((state) => state.cartSlice.item);
   const dispatch = useDispatch();
 
   const qtyId = (id) => {
@@ -44,42 +44,42 @@ export default function Cart({ open, setOpen }) {
                       <div className='mt-8'>
                         <div className='flow-root'>
                           <ul role='list' className='-my-6 divide-y divide-gray-200'>
-                            {products.map((product) => {
-                              const itemQty = products.find((p) => p.id === product.id);
+                            {cartItems.map((item) => {
+                              const itemQty = cartItems.find((p) => p.id === item.id);
                               // Calculate total for each item
-                              itemQty ? (total += product.price * qtyId(product.id)) : null;
+                              itemQty ? (total += item.price * qtyId(item.id)) : null;
 
                               return (
-                                <li key={product.id} className='flex py-6'>
+                                <li key={item.id} className='flex py-6'>
                                   <div className='h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200'>
-                                    <img src={product.images[0]} alt={product.title} className='h-full w-full object-cover object-center' />
+                                    <img src={item.images[0]} alt={item.title} className='h-full w-full object-cover object-center' />
                                   </div>
 
                                   <div className='ml-4 flex flex-1 flex-col'>
                                     <div>
                                       <div className='flex justify-between text-base font-medium text-gray-900'>
                                         <h3>
-                                          <Link to={product.href}>{product.title}</Link>
+                                          <Link to={item.href}>{item.title}</Link>
                                         </h3>
-                                        <p className='ml-4'>${product.price * qtyId(product.id)}</p>
+                                        <p className='ml-4'>${item.price * qtyId(item.id)}</p>
                                       </div>
-                                      <p className='mt-1 text-sm text-gray-500'>{product.color}</p>
+                                      <p className='mt-1 text-sm text-gray-500'>{item.color}</p>
                                     </div>
                                     <div className='flex flex-1 items-end justify-between text-sm'>
                                       <div className='text-gray-00 flex gap-2'>
                                         Qty :{" "}
                                         <div className='flex gap-4 border p-1'>
-                                          <button onClick={() => dispatch(decreaseQty(product.id))}>
+                                          <button onClick={() => dispatch(decreaseQty(item.id))}>
                                             <ChevronDoubleDownIcon className='w-4 h-4' />
                                           </button>
-                                          {qtyId(product.id)}
-                                          <button onClick={() => dispatch(increaseQty(product.id))}>
+                                          {qtyId(item.id)}
+                                          <button onClick={() => dispatch(increaseQty(item.id))}>
                                             <ChevronDoubleUpIcon className='w-4 h-4' />
                                           </button>
                                         </div>
                                       </div>
                                       <div className='flex'>
-                                        <button onClick={() => dispatch(removeItem(product.id))} type='button' className='font-medium text-indigo-600 hover:text-indigo-500'>
+                                        <button onClick={() => dispatch(removeItem(item.id))} type='button' className='font-medium text-indigo-600 hover:text-indigo-500'>
                                           Remove
                                         </button>
                                       </div>
