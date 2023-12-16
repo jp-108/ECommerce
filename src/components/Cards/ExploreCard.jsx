@@ -6,10 +6,6 @@ import bgShoesImage from "../../assets/shoes-collection.png"
 
 
 function ExploreCard() {
-// const bgStyle = {
-  
-// }
-
 
   return (
     <div>

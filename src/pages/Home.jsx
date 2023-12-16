@@ -4,6 +4,9 @@ import Carousel from "../components/Carousel/Carousel";
 import ProductCard from "../components/Cards/ProductCard";
 import ExploreCard from "../components/Cards/ExploreCard";
 import Services from "../components/Services";
+import hero1 from "../assets/hero1.png"
+import hero2 from "../assets/hero2.png"
+import hero3 from "../assets/hero3.png"
 
 function Home() {
   const [category, setCategory] = useState([]);
@@ -11,17 +14,17 @@ function Home() {
 
   const images = [
     {
-      src: "src/assets/hero1.png",
+      src: hero1,
       title: "Men's Special",
       offer: "20% - 50% off",
     },
     {
-      src: "src/assets/hero2.png",
+      src: hero2,
       title: "Kid's Special",
       offer: "25% - 45% off",
     },
     {
-      src: "src/assets/hero3.png",
+      src: hero3,
       title: "Women's Special",
       offer: "20% - 40% off",
     },
