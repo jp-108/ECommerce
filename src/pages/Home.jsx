@@ -11,18 +11,18 @@ function Home() {
 
   const images = [
     {
-      src: "src/assets/cloth1.jpg",
-      title: "Winterwear Special",
+      src: "src/assets/hero1.png",
+      title: "Men's Special",
       offer: "20% - 50% off",
     },
     {
-      src: "src/assets/cloth2.jpg",
-      title: "Special Diwali Offer",
+      src: "src/assets/hero2.png",
+      title: "Kid's Special",
       offer: "25% - 45% off",
     },
     {
-      src: "src/assets/cloth3.jpg",
-      title: "Marriege Special Offer",
+      src: "src/assets/hero3.png",
+      title: "Women's Special",
       offer: "20% - 40% off",
     },
   ];
@@ -33,9 +33,9 @@ function Home() {
       .then((res) => res.json())
       .then((res) => setCategory(res));
 
-    fetch("https://api.escuelajs.co/api/v1/products?offset=0&limit=6")
+    fetch("https://dummyjson.com/products?limit=6")
       .then((res) => res.json())
-      .then((res) => setTopSeller(res));
+      .then((res) => setTopSeller(res.products));
   }, []);
 
   return (
@@ -54,7 +54,7 @@ function Home() {
         <ExploreCard />
       </div>
 
-      <div className='bg-slate-900 pb-5'>
+      <div className='bg-blue-950 pb-5'>
         <h2 className='flex my-12 pt-10 justify-center  font-bold text-slate-100 text-4xl'>Top Selling Products</h2>
         <div className='my-12 flex flex-wrap justify-evenly gap-1 '>
           {topSeller.map((item) => (

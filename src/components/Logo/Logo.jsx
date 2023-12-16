@@ -1,11 +1,11 @@
 import React from "react";
+import logo from "../../assets/svg/logo-no-background.svg";
 
 function Logo() {
   return (
-    <h1 className='text-3xl border-2 box-border whitespace-nowraps pl-4 py-2 border-black text-black font-bold'>
-      <span className='bg-white'>E-</span>
-      <span className='bg-black text-white p-2'>Commerse</span>
-    </h1>
+    <div className='w-40 h-10'>
+      <img src={logo} alt='' />
+    </div>
   );
 }
 
