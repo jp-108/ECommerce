@@ -9,7 +9,7 @@ import store from "./Redux-store/store.js";
 import { Provider } from "react-redux";
 import Product from "./components/Product/Product.jsx";
 import Checkout from "./components/Cart/Checkout.jsx";
-import LoginPage from "./pages/LoginPage.Jsx";
+import LoginPage from "./pages/LoginPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
 
 const router = createBrowserRouter([
