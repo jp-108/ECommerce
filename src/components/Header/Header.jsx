@@ -1,65 +1,30 @@
-import { useState, useRef, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Logo from "../Logo/Logo";
 import { ShoppingCartIcon } from "@heroicons/react/24/outline";
 import SearchBar from "../SearchBar/SearchBar";
 import Cart from "../Cart/Cart";
+import ProfileDropDown from "./ProfileDropDown";
+import { auth } from "../../config/firebase";
+import {  getUserData } from "../../Redux-store/authSlice";
 
-// Profile Dropdown
-const ProfileDropDown = (props) => {
-  const [state, setState] = useState(false);
-  const profileRef = useRef();
 
-  const navigation = [
-    { title: "Dashboard", path: "/" },
-    { title: "Settings", path: "/" },
-  ];
-
-  useEffect(() => {
-    const handleDropDown = (e) => {
-      if (!profileRef.current.contains(e.target)) setState(false);
-    };
-    document.addEventListener("click", handleDropDown);
-  }, []);
-
-  return (
-    <div className={`relative ${props.class}`}>
-      <div className='flex items-center space-x-4'>
-        <button ref={profileRef} className='w-10 h-10 outline-none rounded-full ring-offset-2 ring-gray-200 ring-2 lg:focus:ring-indigo-600' onClick={() => setState(!state)}>
-          <img src='https://randomuser.me/api/portraits/men/46.jpg' className='w-full h-full rounded-full' />
-        </button>
-        <div className='lg:hidden'>
-          <span className='block'>Micheal John</span>
-          <span className='block text-sm text-gray-500'>john@gmail.com</span>
-        </div>
-      </div>
-      <ul className={`bg-white z-10 top-12 right-0 mt-5 space-y-5 lg:absolute lg:border lg:rounded-md lg:text-sm lg:w-52 lg:shadow-md lg:space-y-0 lg:mt-0 ${state ? "" : "lg:hidden"}`}>
-        {navigation.map((item, idx) => (
-          <li key={idx}>
-            <Link className='block text-gray-600 lg:hover:bg-gray-50 lg:p-2.5' to={item.path}>
-              {item.title}
-            </Link>
-          </li>
-        ))}
-        <li>
-          <Link onClick={() => props.setAuthStatus(false)} className='block lg:border-t  text-gray-600 lg:hover:bg-gray-50 lg:p-2.5' to='/'>
-            Log Out
-          </Link>
-        </li>
-      </ul>
-    </div>
-  );
-};
-
-export default () => {
+export default function Header() {
   const [menuState, setMenuState] = useState(false);
-  // const authStatus = useSelector((state) => state.auth.status);
-  const [authStatus, setAuthStatus] = useState(false);
-
-  const [open, setOpen] = useState(false);
-
+  const authStatus = useSelector((state) => state.authSlice.authStatus);
   const product = useSelector((state) => state.cartSlice.data);
+  const dispatch = useDispatch()
+  const [open, setOpen] = useState(false);
+  
+  useEffect(()=>{
+   auth.onAuthStateChanged((user)=>{
+    if(user){
+      // dispatch(getAuthStatus(true))
+      dispatch(getUserData({uid:user.uid, username:user.displayName, email:user.email}))
+    }
+  })
+},[])
 
   const cartClickHandler = () => {
     setOpen(true);
@@ -97,7 +62,7 @@ export default () => {
   ];
 
   const authentication = authStatus ? (
-    <ProfileDropDown class='' setAuthStatus={setAuthStatus} />
+    <ProfileDropDown />
   ) : (
     <Link to='/login' onClick={() => setMenuState(!menuState)} className='relative inline-flex items-center justify-center p-4 px-6 py-2 overflow-hidden font-medium transition duration-300 ease-out border-2 rounded-full shadow-md group'>
       <span className='absolute inset-0 flex items-center justify-center w-full h-full bg-black text-white duration-300 -translate-x-full group-hover:translate-x-0 ease'>
@@ -119,7 +84,7 @@ export default () => {
           </Link>
         </div>
         <div className='flex-1 flex items-center justify-between'>
-          <div className={`bg-white absolute z-10 w-full top-16 left-0 p-4 border-b lg:static lg:block lg:border-none ${menuState ? "" : "hidden"}`}>
+          <div className={`bg-white absolute z-20 w-full top-16 left-0 p-4 border-b lg:static lg:block lg:border-none ${menuState ? "" : "hidden"}`}>
             <ul className='mt-12 space-y-5 lg:flex lg:space-x-6 lg:space-y-0 lg:mt-0'>
               <div className='block lg:hidden'>
                 <SearchBar />
@@ -169,4 +134,4 @@ export default () => {
       </div>
     </nav>
   );
-};
+}

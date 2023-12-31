@@ -7,6 +7,9 @@ import Services from "../components/Services";
 import hero1 from "../assets/hero1.png"
 import hero2 from "../assets/hero2.png"
 import hero3 from "../assets/hero3.png"
+import textureBg from "../assets/wooden-texture.jpg"
+import textureWall from "../assets/brick-wall-texture.jpg"
+
 
 function Home() {
   const [category, setCategory] = useState([]);
@@ -57,8 +60,8 @@ function Home() {
         <ExploreCard />
       </div>
 
-      <div className='bg-blue-950 pb-5'>
-        <h2 className='flex my-12 pt-10 justify-center  font-bold text-slate-100 text-4xl'>Top Selling Products</h2>
+      <div className='pb-5' style={{backgroundImage:`url("https://images.pexels.com/photos/4790056/pexels-photo-4790056.jpeg?auto=compress&cs=tinysrgb&w=1560&h=750&dpr=1")`}}>
+        <div className='flex my-12 py-5 justify-center font-bold text-black bg-white text-4xl'><h2 className="p-2">Top Selling Products</h2></div>
         <div className='my-12 flex flex-wrap justify-evenly gap-1 '>
           {topSeller.map((item) => (
             <ProductCard key={item.id} product={item} />

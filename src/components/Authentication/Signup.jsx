@@ -1,10 +1,41 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronDoubleLeftIcon } from "@heroicons/react/24/outline";
 import Logo from "../Logo/Logo";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth, db } from "../../config/firebase";
+import { doc, setDoc } from "firebase/firestore";
+
 
 function Login() {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [validation, setValidation] = useState(null)
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [userName, setUserName] = useState("");
+
+  const signUp = async (e) => {
+    e.preventDefault();
+    if(password === confirmPassword){
+      setValidation(null)
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, {displayName : userName})
+      const userDocRef = doc(db, "users", userCredential.user.uid);
+      await setDoc(userDocRef, {
+        username: userName,
+        email: email,
+      });
+      navigate("/")
+      console.log("User created:", userCredential.user);
+    } catch (error) {
+      setValidation(error.code);
+    }
+  } else{
+    setValidation("Password not Match!")
+  }
+  };
 
   return (
     <div className='relative overflow-hidden'>
@@ -27,37 +58,39 @@ function Login() {
           </div>
 
           {/* <!-- End Title --> */}
+          {validation && <p className="text-center text-red-500">{validation}</p>}
+
 
           {/* <!-- Form --> */}
           <form>
             <div className='mb-4 mt-8'>
-              <label for='hs-hero-email-2' className='block text-sm font-medium dark:text-white'>
-                <span className='sr-only'>Email address</span>
+              <label htmlFor='hs-hero-username-2' className='block text-sm font-medium dark:text-white'>
+                <span className='sr-only'>User Name</span>
               </label>
-              <input type='email' id='hs-hero-email-2' className='py-3 px-4 block w-full border border-gray-500 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none' placeholder='Email address' />
+              <input type='text' onChange={(e)=>setUserName(e.target.value)} id='hs-hero-username-2' className='py-3 px-4 block w-full border border-gray-500 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none' placeholder='User Name' />
             </div>
             <div className='mb-4'>
-              <label for='hs-hero-email-2' className='block text-sm font-medium dark:text-white'>
+              <label htmlFor='hs-hero-email-2' className='block text-sm font-medium dark:text-white'>
                 <span className='sr-only'>Email address</span>
               </label>
-              <input type='email' id='hs-hero-email-2' className='py-3 px-4 block w-full border border-gray-500 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none' placeholder='Email address' />
-            </div>
-            <div className='mb-4'>
-              <label for='hs-hero-email-2' className='block text-sm font-medium dark:text-white'>
-                <span className='sr-only'>Email address</span>
-              </label>
-              <input type='email' id='hs-hero-email-2' className='py-3 px-4 block w-full border border-gray-500 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none' placeholder='Email address' />
+              <input type='email' onChange={(e)=>setEmail(e.target.value)} id='hs-hero-email-2' className='py-3 px-4 block w-full border border-gray-500 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none' placeholder='Email address' />
             </div>
 
             <div className='mb-4'>
-              <label for='hs-hero-password-2' className='block text-sm font-medium dark:text-white'>
+              <label htmlFor='hs-hero-password-1' className='block text-sm font-medium dark:text-white'>
                 <span className='sr-only'>Password</span>
               </label>
-              <input type='email' id='hs-hero-password-2' className='py-3 px-4 block w-full border border-gray-500 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none' placeholder='Password' />
+              <input type='password' id='hs-hero-password-1' onChange={(e)=>setPassword(e.target.value)} className='py-3 px-4 block w-full border border-gray-500 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none' placeholder='Password' />
+            </div>
+            <div className='mb-4'>
+              <label htmlFor='hs-hero-password-2' className='block text-sm font-medium dark:text-white'>
+                <span className='sr-only'>Confirm Password</span>
+              </label>
+              <input type='password' id='hs-hero-password-2' onChange={(e)=>setConfirmPassword(e.target.value)} className='py-3 px-4 block w-full border border-gray-500 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none' placeholder='Confirm Password' />
             </div>
             <div className='my-3'>
               <span className='ml-3 text-sm'>
-                <p className='inline-block' for='remember-me'>
+                <p className='inline-block' htmlFor='remember-me'>
                   {" "}
                   By signing up you are agreeing to our{" "}
                   <a className='underline' href='#'>
@@ -68,7 +101,7 @@ function Login() {
             </div>
 
             <div className='grid'>
-              <button type='submit' className='py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600'>
+              <button onClick={signUp} className='py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600'>
                 Sign Up
               </button>
             </div>

@@ -1,10 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronDoubleLeftIcon } from "@heroicons/react/24/outline";
 import Logo from "../Logo/Logo";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../config/firebase";
 
 function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [validation, setValidation] = useState(null)
   const navigate = useNavigate();
+
+  const signIn = async (e) => {
+    e.preventDefault();
+    try {
+      setValidation(null)
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate("/");
+    } catch (error) {
+      setValidation(error.code);
+    }
+  };
 
   return (
     <div className='relative overflow-hidden'>
@@ -27,27 +43,26 @@ function Login() {
           </div>
 
           {/* <!-- End Title --> */}
-
+          {validation && <p className="text-center text-red-500">{validation}</p>}
           {/* <!-- Form --> */}
           <form>
             <div className='mb-4 mt-8'>
-              <label for='hs-hero-email-2' className='block text-sm font-medium dark:text-white'>
+              <label htmlFor='hs-hero-email-2' className='block text-sm font-medium dark:text-white'>
                 <span className='sr-only'>Email address</span>
               </label>
-              <input type='email' id='hs-hero-email-2' className='py-3 px-4 block w-full border border-gray-500 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none' placeholder='Email address' />
+              <input type='email' id='hs-hero-email-2' onChange={(e) => setEmail(e.target.value)} className='py-3 px-4 block w-full border border-gray-500 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none' placeholder='Email address' />
             </div>
 
             <div className='mb-4'>
-              <label for='hs-hero-password-2' className='block text-sm font-medium dark:text-white'>
+              <label htmlFor='hs-hero-password-2' className='block text-sm font-medium dark:text-white'>
                 <span className='sr-only'>Password</span>
               </label>
-              <input type='email' id='hs-hero-password-2' className='py-3 px-4 block w-full border border-gray-500 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none' placeholder='Password' />
+              <input type='password' id='hs-hero-password-2' onChange={(e) => setPassword(e.target.value)} className='py-3 px-4 block w-full border border-gray-500 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none' placeholder='Password' />
             </div>
             <div className='my-3'>
               <span className='ml-3 text-sm'>
-                <p className='inline-block' for='remember-me'>
-                  {" "}
-                  By signing up you are agreeing to our{" "}
+                <p className='inline-block' htmlFor='remember-me'>
+                  By signing up you are agreeing to our
                   <a className='underline' href='#'>
                     Terms and Conditions
                   </a>
@@ -56,7 +71,7 @@ function Login() {
             </div>
 
             <div className='grid'>
-              <button type='submit' className='py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600'>
+              <button onClick={signIn} className='py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600'>
                 Login
               </button>
             </div>
@@ -67,7 +82,7 @@ function Login() {
                   <input id='remember' aria-describedby='remember' type='checkbox' className='w-4 h-4 border border-gray-500 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800' required='' />
                 </div>
                 <div className='ml-3 text-sm'>
-                  <label for='remember'>Remember me</label>
+                  <label htmlFor='remember'>Remember me</label>
                 </div>
               </div>
               <a href='#' className='text-sm font-medium text-primary-600 hover:underline dark:text-primary-500'>

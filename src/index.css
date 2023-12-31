@@ -9,6 +9,7 @@
 /* Style the scrollbar */
 ::-webkit-scrollbar {
     width: 5px;
+    height: 5px;
     /* Set the width of the scrollbar */
 }
 
