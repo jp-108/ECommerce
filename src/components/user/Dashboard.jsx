@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import AddItem from "./AddItem";
 import UpdateItem from "./UpdateItem";
 import { db, storage } from "../../config/firebase";
-import { collection, doc, getDocs, query, where, deleteDoc } from "firebase/firestore";
+import { collection, doc, onSnapshot, query, where, deleteDoc } from "firebase/firestore";
 import { ref, deleteObject } from "firebase/storage";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 
@@ -14,36 +14,8 @@ function Dashboard() {
   const [updateProduct, setUpdateProduct] = useState(null)
   const [sort, setSort] = useState("ratings");
 
-  const fetchData = async () => {
-    try {
-      const collectionRef = collection(db, "Products");
-      const querySnapshot = await getDocs(collectionRef);
-      const newData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setData(newData);
-    } catch (error) {
-      console.error("Error fetching data: ", error);
-    }
-  };
-
-  const getFiltered = async () => {
-    try {
-      const q = query(collection(db, "Products"), where("category", "==", filter));
-      const querySnapshot = await getDocs(q);
-      const newData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setData(newData);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   const deleteItems = async (id, images) => {
-    console.log(images);
     try {
       images.forEach(async (image) => {
         const imageRef = ref(storage, image);
@@ -68,12 +40,19 @@ function Dashboard() {
   }
   
   useEffect(() => {
-    if (filter == "All") {
-      fetchData();
+    if (filter === 'All') {
+      const unsubscribe = onSnapshot(collection(db, 'Products'), (snapshot) => {
+        setData(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+      });
+      return () => unsubscribe(); // Cleanup function
     } else {
-      getFiltered();
+      const q = query(collection(db, 'Products'), where('category', '==', filter));
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        setData(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+      });
+      return () => unsubscribe(); // Cleanup function
     }
-  }, [toggleModal, filter, deleteItems]);
+  }, [filter]);
 
   const sortedData = sort === "price" ? data.slice().sort((a, b) => a.price - b.price) : sort === "price-desc" ? data.slice().sort((a, b) => b.price - a.price) : sort === "ratings" ? data.slice().sort((a, b) => b.ratings - a.ratings) : data.slice();
 
@@ -85,7 +64,7 @@ function Dashboard() {
       </div>
       <div className={`fixed top-0 z-40 overflow-hidden items-center h-screen w-screen ${updateModal ? "flex" : "hidden"}`}>
         <div onClick={closeUpdateModal} className={`absolute h-full w-full top-0  backdrop-blur bg-black/25 justify-center`}></div>
-    {  updateProduct && <UpdateItem updateProduct={updateProduct} updateModal={updateModal} setUpdateModal={setUpdateModal} /> }
+    {updateProduct && <UpdateItem updateProduct={updateProduct} setUpdateProduct={setUpdateProduct} setUpdateModal={setUpdateModal} /> }
       </div>
       <div className='md:mx-48  mt-10'>
         <div className='flex my-2 flex-wrap'>
@@ -98,6 +77,7 @@ function Dashboard() {
               <option defaultValue='All'>All</option>
               <option value='Mens'>Mens</option>
               <option value='Women'>Women</option>
+              <option value='Shoes'>Shoes</option>
             </select>
           </div>
           <div className='flex items-center gap-1 mx-2 px-2'>

@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import Input from "./Input";
 import { db } from "../../config/firebase";
 import { doc,  updateDoc } from "firebase/firestore";
 
-function UpdateItem({ updateProduct,updateModal, setUpdateModal }) {
+function UpdateItem({ updateProduct,setUpdateProduct, setUpdateModal }) {
   const { register, handleSubmit, reset } = useForm({defaultValues:updateProduct});
   const [progress, setProgress] = useState("Submit");
 
   const onSubmit = async (data) => {
     setProgress("loading...");
     try {
-        const docRef = await updateDoc(doc(db, "Products", updateProduct.id ), {
+        await updateDoc(doc(db, "Products", updateProduct.id ), {
         productName: data.productName,
         discription: data.discription,
         price: Number(data.price),
@@ -25,13 +25,15 @@ function UpdateItem({ updateProduct,updateModal, setUpdateModal }) {
       // Reset form after successfully submitted
       setProgress("Success");
       reset();
+      setUpdateProduct(null)
       setUpdateModal(false);
-      console.log("Document written with ID: ", docRef.id);
-    } catch (e) {
+      } catch (e) {
       setProgress("Failed");
       console.error("Error adding document: ", e);
     }
   };
+
+
   return (
     <div className='flex z-50 overflow-auto bg-teal-700/50 mx-auto md:w-[60vw] h-[90vh] md:h-[75vh]'>
       <form onSubmit={handleSubmit(onSubmit)}>

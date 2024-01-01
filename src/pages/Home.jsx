@@ -7,12 +7,11 @@ import Services from "../components/Services";
 import hero1 from "../assets/hero1.png"
 import hero2 from "../assets/hero2.png"
 import hero3 from "../assets/hero3.png"
-import textureBg from "../assets/wooden-texture.jpg"
-import textureWall from "../assets/brick-wall-texture.jpg"
+import { db } from "../config/firebase";
+import { collection, onSnapshot, query, limit} from "firebase/firestore";
 
 
 function Home() {
-  const [category, setCategory] = useState([]);
   const [topSeller, setTopSeller] = useState([]);
 
   const images = [
@@ -35,25 +34,17 @@ function Home() {
 
 
   useEffect(() => {
-    fetch("https://api.escuelajs.co/api/v1/categories")
-      .then((res) => res.json())
-      .then((res) => setCategory(res));
-
-    fetch("https://dummyjson.com/products?limit=6")
-      .then((res) => res.json())
-      .then((res) => setTopSeller(res.products));
+    const q = query(collection(db, 'Products'), limit(6));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setTopSeller(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+    });
+    return () => unsubscribe(); // Cleanup function
   }, []);
 
   return (
     <>
       <div>
         <Carousel images={images} timeDuration={3000} />
-      </div>
-      <h2 className='flex my-14 pt-8 justify-center font-bold text-slate-950 text-4xl'>Top Categories</h2>
-      <div className='m-2 flex xl:flex-nowrap flex-wrap justify-center'>
-        {category.map((item) => (
-          <Category key={item.id} category={item} />
-        ))}
       </div>
       <div>
         <h2 className='flex my-12 pt-10 justify-center text-center font-bold text-slate-950 text-4xl'>Explore New arrivals of best categories</h2>

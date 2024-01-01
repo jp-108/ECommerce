@@ -61,6 +61,8 @@ function AddItem({ setToggleModal }) {
     } catch (e) {
       setProgress("Failed");
       console.error("Error adding document: ", e);
+    } finally {
+      setProgress("Submit");
     }
   };
   return (
