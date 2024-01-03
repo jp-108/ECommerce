@@ -78,6 +78,7 @@ function Dashboard() {
               <option value='Mens'>Mens</option>
               <option value='Women'>Women</option>
               <option value='Shoes'>Shoes</option>
+              <option value='Kids'>Kids</option>
             </select>
           </div>
           <div className='flex items-center gap-1 mx-2 px-2'>
