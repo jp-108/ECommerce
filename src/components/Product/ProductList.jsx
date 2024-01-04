@@ -117,7 +117,7 @@ export default function ProductList({ apiUrl }) {
           </Dialog>
         </Transition.Root>
 
-        <main className='mx-auto px-4 sm:px-6 lg:px-8'>
+        <main className='mx-auto px-2 sm:px-6 lg:px-8'>
           <div className='flex items-baseline justify-between border-b border-gray-200 py-6 '>
             <h1 className='text-4xl font-bold tracking-tight text-gray-900'>Products</h1>
 
@@ -193,7 +193,7 @@ export default function ProductList({ apiUrl }) {
               </form>
 
               {/* Product grid */}
-              <div className='lg:col-span-3 lg:gap-10 custum-scroll overflow-y-scroll w-screen lg:w-full h-screen flex flex-wrap'>
+              <div className='lg:col-span-3 lg:gap-10 custum-scroll overflow-y-scroll w-full h-screen flex flex-wrap'>
                 {sortedData.length == 0 ? (
                   <h2 className='text-xl'>No Products Found</h2>
                 ) : (

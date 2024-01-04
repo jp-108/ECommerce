@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 function ProductCard({ product }) {
   return (
     <>
-      <div className='flex flex-col md:w-48 w-44 h-[19rem] backdrop-blur-sm bg-white/70 border border-black/30 hover:border-black bg-opacity-95'>
+      <div className='flex m-0.5 flex-col md:w-48 w-44 h-[19rem] backdrop-blur-sm bg-white/70 border border-black/30 hover:border-black bg-opacity-95'>
         <Link className='relative mx-auto flex w-full h-60 overflow-hidden' to={`/product/${product.id}`}>
           <img className='object-fill w-48' src={product.images ? product.images[0] : ""} alt='product image' />
           <div className='flex py-2 top-0 absolute flex-nowrap items-center'>
@@ -16,15 +16,15 @@ function ProductCard({ product }) {
             </span>
           </div>
         </Link>
-        <div className='flex flex-col justify-stretch mt-4 px-3 pb-2'>
+        <div className='flex flex-col justify-stretch mt-4 px-1 md:px-3 pb-2'>
           <Link to='/'>
             <h5 className='text-base text-slate-950'>{product.productName}</h5>
           </Link>
           <div className='mb-1 flex items-center justify-between'>
             <div>
               <span className='text-lg font-bold text-slate-950'>₹{product.price}</span>
-              <span className='text-xs p-1 text-slate-950 line-through'>₹{product.price + Math.ceil(product.price / 3.9)}</span>
-              <span className='m-1 py-1 text-center text-sm text-red-600 font-medium '>(39% OFF)</span>
+              <span className='text-xs p-1 text-slate-700 line-through'>₹{Math.ceil(product.price/(1- product.discountPercentage/100))}</span>
+                <span className='py-1 text-center text-sm text-red-600 font-medium '>({product.discountPercentage}% OFF)</span>
             </div>
           </div>
         </div>
