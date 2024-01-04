@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { addToCart } from "../../Redux-store/cartSlice";
 import { ChevronDoubleLeftIcon } from "@heroicons/react/24/outline";
-
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "../../config/firebase";
 
 function Product() {
   const dispatch = useDispatch();
@@ -12,10 +13,10 @@ function Product() {
   const [item, setItem] = useState([]);
 
   useEffect(() => {
-    fetch(`https://dummyjson.com/products/${params.id}`)
-      .then((res) => res.json())
-      .then((res) => setItem(res));
-      
+    const unsubscribe = onSnapshot(doc(db, "Products", params.id), (snapshot) => {
+      setItem(snapshot.data());
+    });
+    return () => unsubscribe(); // Cleanup function
   }, []);
 
   return (
@@ -29,7 +30,7 @@ function Product() {
             <img alt='ecommerce' className='lg:w-1/2 w-full  h-[34rem] object-contain object-center rounded' src={item.images ? item.images[0] : ""} />
             <div className='lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0'>
               <h2 className='text-sm title-font text-gray-500 tracking-widest'>{item.brand}</h2>
-              <h1 className='text-gray-900 text-3xl title-font font-medium mb-1'>{item.title}</h1>
+              <h1 className='text-gray-900 text-3xl title-font font-medium mb-1'>{item.productName}</h1>
               <div className='flex mb-4'>
                 <span className='flex items-center'>
                   <svg fill='currentColor' stroke='currentColor' strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' className='w-4 h-4 text-blue-950' viewBox='0 0 24 24'>
@@ -67,7 +68,7 @@ function Product() {
                   </a>
                 </span>
               </div>
-              <p className='leading-relaxed'>{item.description}</p>
+              <p className='leading-relaxed'>{item.discription}</p>
               <div className='flex mt-6 items-center pb-5 border-b-2 border-gray-100 mb-5'>
                 <div className='flex'>
                   <span className='mr-3'>Color</span>
@@ -94,6 +95,8 @@ function Product() {
               </div>
               <div className='flex'>
                 <span className='title-font font-medium text-2xl text-gray-900'>${item.price}</span>
+                <span className='text-md p-1 text-slate-700 line-through'>₹{item.price + Math.ceil(item.price / 3.9)}</span>
+                <span className='m-1 py-1 text-center text-sm text-red-600 font-medium '>(39% OFF)</span>
                 <button onClick={() => dispatch(addToCart(item))} className='flex ml-auto text-white bg-blue-950 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded'>
                   Add to cart
                 </button>

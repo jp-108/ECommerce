@@ -9,9 +9,9 @@ import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 function Dashboard() {
   const [toggleModal, setToggleModal] = useState(false);
   const [updateModal, setUpdateModal] = useState(false);
+  const [updateProduct, setUpdateProduct] = useState(null)
   const [data, setData] = useState([]);
   const [filter, setFilter] = useState("All");
-  const [updateProduct, setUpdateProduct] = useState(null)
   const [sort, setSort] = useState("ratings");
 
 

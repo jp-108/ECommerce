@@ -3,13 +3,15 @@ import { Dialog, Disclosure, Menu, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon } from "@heroicons/react/20/solid";
 import ProductCard from "../Cards/ProductCard";
-import { fetchProductData, toggleFilter } from "../../Redux-store/productSlice";
+import { getProductList, toggleFilter } from "../../Redux-store/productSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { db } from "../../config/firebase";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 
 const sortOptions = [
-  { name: "Best Rating", current: false },
-  { name: "Price: Low to High", current: false },
-  { name: "Price: High to Low", current: false },
+  { name: "Top Rated", value: "ratings", current: false },
+  { name: "Price: Low to High", value: "price", current: false },
+  { name: "Price: High to Low", value: "price-desc", current: false },
 ];
 
 function classNames(...classes) {
@@ -21,41 +23,41 @@ export default function ProductList({ apiUrl }) {
   const [selectedBrand, setSelectedBrand] = useState([]);
   const [filterProduct, setFilterProduct] = useState([]);
   const dispatch = useDispatch();
-  const product = useSelector((state) => state.productSlice.products);
+  const data = useSelector((state) => state.productSlice.products);
   const brand = useSelector((state) => state.productSlice.brand);
   const category = useSelector((state) => state.productSlice.category);
   const filters = [brand, category];
+  const [sort, setSort] = useState("ratings");
 
   useEffect(() => {
-    dispatch(fetchProductData(apiUrl));
-  }, []);
+    if (apiUrl === "All") {
+      const unsubscribe = onSnapshot(collection(db, "Products"), (snapshot) => {
+        dispatch(getProductList(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))));
+      });
+      return () => unsubscribe(); // Cleanup function
+    } else {
+      const q = query(collection(db, "Products"), where("category", "==", apiUrl));
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        dispatch(getProductList(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))));
+      });
+      return () => unsubscribe(); // Cleanup function
+    }
+  }, [apiUrl]);
 
   useEffect(() => {
-    const filterByBrand = product.filter((product) => selectedBrand.includes(product.brand));
-    const filterByCategory = product.filter((product) => selectedBrand.includes(product.category));
-    const filterByBoth = product.filter((product) => selectedBrand.includes(product.brand) && selectedBrand.includes(product.category));
+    const filterByBrand = data.filter((product) => selectedBrand.includes(product.brand));
+    const filterByCategory = data.filter((product) => selectedBrand.includes(product.subCategory));
+    const filterByBoth = data.filter((product) => selectedBrand.includes(product.brand) && selectedBrand.includes(product.subCategory));
 
-    setFilterProduct(selectedBrand.length > 0 ? (filterByBoth.length > 0 ? filterByBoth : filterByBrand.length > 0 && filterByCategory.length == 0 ? filterByBrand : filterByBrand == 0 ? filterByCategory : []) : product);
-  }, [selectedBrand, product]);
+    setFilterProduct(selectedBrand.length > 0 ? (filterByBoth.length > 0 ? filterByBoth : filterByBrand.length > 0 && filterByCategory.length == 0 ? filterByBrand : filterByBrand == 0 ? filterByCategory : []) : data);
+  }, [selectedBrand, data]);
 
   const handleOnChange = (filterId, value, option) => {
     setSelectedBrand((prevBrands) => (prevBrands.includes(value) ? prevBrands.filter((brand) => brand != value) : [...prevBrands, value]));
-
     dispatch(toggleFilter({ filterId, value }));
   };
 
-  const handleSort = (option) => {
-    const sortByRating = [...filterProduct].sort((a, b) => b.rating - a.rating); //Shallow Copy
-    const sortByPriceHighToLow = [...filterProduct].sort((a, b) => b.price - a.price);
-    const sortByPriceLowToHigh = [...filterProduct].sort((a, b) => a.price - b.price);
-    if (option.name === "Best Rating") {
-      setFilterProduct(sortByRating);
-    } else if (option.name === "Price: Low to High") {
-      setFilterProduct(sortByPriceLowToHigh);
-    } else if (option.name === "Price: High to Low") {
-      setFilterProduct(sortByPriceHighToLow);
-    }
-  };
+  const sortedData = sort === "price" ? filterProduct.slice().sort((a, b) => a.price - b.price) : sort === "price-desc" ? filterProduct.slice().sort((a, b) => b.price - a.price) : sort === "ratings" ? filterProduct.slice().sort((a, b) => b.ratings - a.ratings) : filterProduct.slice();
 
   return (
     <div className='bg-white'>
@@ -134,7 +136,7 @@ export default function ProductList({ apiUrl }) {
                       {sortOptions.map((option) => (
                         <Menu.Item key={option.name}>
                           {({ active }) => (
-                            <button onClick={() => handleSort(option)} className={classNames(option.current ? "font-medium text-gray-900" : "text-gray-500", active ? "bg-gray-100" : "", "block px-4 py-2 text-sm")}>
+                            <button onClick={() => setSort(option.value)} className={classNames(option.current ? "font-medium text-gray-900" : "text-gray-500", active ? "bg-gray-100" : "", "block px-4 py-2 text-sm")}>
                               {option.name}
                             </button>
                           )}
@@ -145,10 +147,6 @@ export default function ProductList({ apiUrl }) {
                 </Transition>
               </Menu>
 
-              <button type='button' className='-m-2 ml-5 p-2 text-gray-400 hover:text-gray-500 sm:ml-7'>
-                <span className='sr-only'>View grid</span>
-                <Squares2X2Icon className='h-5 w-5' aria-hidden='true' />
-              </button>
               <button type='button' className='-m-2 ml-4 p-2 text-gray-400 hover:text-gray-500 sm:ml-6 lg:hidden' onClick={() => setMobileFiltersOpen(true)}>
                 <span className='sr-only'>Filters</span>
                 <FunnelIcon className='h-5 w-5' aria-hidden='true' />
@@ -196,12 +194,15 @@ export default function ProductList({ apiUrl }) {
 
               {/* Product grid */}
               <div className='lg:col-span-3 lg:gap-10 custum-scroll overflow-y-scroll w-screen lg:w-full h-screen flex flex-wrap'>
-                {" "}
-                {filterProduct.map((item) => (
-                  <div key={item.id}>
-                    <ProductCard product={item} />
-                  </div>
-                ))}
+                {sortedData.length == 0 ? (
+                  <h2 className='text-xl'>No Products Found</h2>
+                ) : (
+                  sortedData.map((item) => (
+                    <div key={item.id}>
+                      <ProductCard product={item} />
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </section>

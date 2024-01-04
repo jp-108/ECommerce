@@ -5,7 +5,7 @@ function ProductCard({ product }) {
   return (
     <>
       <div className='flex flex-col md:w-48 w-44 h-[19rem] backdrop-blur-sm bg-white/70 border border-black/30 hover:border-black bg-opacity-95'>
-        <Link className='relative mx-auto flex w-full h-60 overflow-hidden' to={`/products/${product.id}`}>
+        <Link className='relative mx-auto flex w-full h-60 overflow-hidden' to={`/product/${product.id}`}>
           <img className='object-fill w-48' src={product.images ? product.images[0] : ""} alt='product image' />
           <div className='flex py-2 top-0 absolute flex-nowrap items-center'>
             <span className='bg-white/30 backdrop-blur-md flex p-1'>
@@ -24,7 +24,7 @@ function ProductCard({ product }) {
             <div>
               <span className='text-lg font-bold text-slate-950'>₹{product.price}</span>
               <span className='text-xs p-1 text-slate-950 line-through'>₹{product.price + Math.ceil(product.price / 3.9)}</span>
-              <span className='m-2 py-1 text-center text-sm text-red-600 font-medium '>(39% OFF)</span>
+              <span className='m-1 py-1 text-center text-sm text-red-600 font-medium '>(39% OFF)</span>
             </div>
           </div>
         </div>

@@ -36,28 +36,32 @@ export default function Header() {
       path: "/",
     },
     {
-      title: "Mens",
-      path: "/products/?categoryId=1",
+      title: "All",
+      path: "/products/All",
     },
     {
-      title: "Womens",
-      path: "/products/?categoryId=2",
+      title: "Men",
+      path: "/products/Mens",
+    },
+    {
+      title: "Women",
+      path: "/products/Women",
     },
     {
       title: "Kids",
-      path: "/products/?categoryId=3",
+      path: "/products/Kids",
     },
     {
       title: "Shoes",
-      path: "/products/?categoryId=4",
+      path: "/products/Shoes",
     },
     {
-      title: "Electronics",
-      path: "/products/?categoryId=5",
+      title: "Accessories",
+      path: "/products/Accessories",
     },
     {
-      title: "Miscellaneous",
-      path: "/products/?limit=100",
+      title: "Home & Living",
+      path: "/products/Home&Living",
     },
   ];
 
@@ -90,7 +94,7 @@ export default function Header() {
                 <SearchBar />
               </div>
               {navigation.map((item, idx) => (
-                <li key={idx} className='text-gray-600 hover:text-gray-900'>
+                <li key={idx} className='text-gray-600 px-1 whitespace-nowrap hover:text-gray-900'>
                   <Link to={item.path} onClick={() => setMenuState(!menuState)}>
                     {item.title}
                   </Link>

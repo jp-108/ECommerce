@@ -1,13 +1,14 @@
 import React from "react";
 import ProductList from "../components/Product/ProductList";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
+
 
 function Products() {
-  const location = useLocation();
+  const params = useParams()
 
   return (
     <div className='relative w-full h-full'>
-      <ProductList apiUrl={location.search} />
+      <ProductList apiUrl={params.category} />
     </div>
   );
 }
