@@ -40,10 +40,11 @@
 /* Track */
 * {
     scrollbar-color: #f1f1f1 #888;
+    transition: all 0.4s ease-in;
 }
 
 /* Handle on hover */
-* {
+*:hover {
     scrollbar-color: #555 #888;
 }
 

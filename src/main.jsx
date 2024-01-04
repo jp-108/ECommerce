@@ -12,6 +12,7 @@ import Checkout from "./components/Cart/Checkout.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
+import ProductSkeleton from "./components/Product/ProductSkeleton.jsx";
 
 const router = createBrowserRouter([
   {
@@ -49,7 +50,7 @@ const router = createBrowserRouter([
       {
         path: "/dashboard",
         element: <DashboardPage />,
-      },
+      }
     ],
   },
 ]);

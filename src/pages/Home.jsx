@@ -9,10 +9,12 @@ import hero2 from "../assets/hero2.png"
 import hero3 from "../assets/hero3.png"
 import { db } from "../config/firebase";
 import { collection, onSnapshot, query, limit} from "firebase/firestore";
+import CardSkelton from "../components/Cards/CardSkelton";
 
 
 function Home() {
   const [topSeller, setTopSeller] = useState([]);
+  const numberOfSkeletons = 6;
 
   const images = [
     {
@@ -53,8 +55,11 @@ function Home() {
 
       <div className='pb-5' style={{backgroundImage:`url("https://images.pexels.com/photos/4790056/pexels-photo-4790056.jpeg?auto=compress&cs=tinysrgb&w=1560&h=750&dpr=1")`}}>
         <div className='flex my-12 py-5 justify-center font-bold text-black bg-white text-4xl'><h2 className="p-2">Top Selling Products</h2></div>
-        <div className='my-12 flex flex-wrap justify-evenly gap-1 '>
-          {topSeller.map((item) => (
+        <div className='my-12 flex flex-wrap justify-evenly gap-1'>
+          {topSeller.length===0?Array.from({ length: numberOfSkeletons }, (_, index) => (
+        <CardSkelton key={index} />
+      )):
+          topSeller.map((item) => (
             <ProductCard key={item.id} product={item} />
           ))}
         </div>

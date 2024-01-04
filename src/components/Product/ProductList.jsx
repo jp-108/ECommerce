@@ -7,6 +7,7 @@ import { getProductList, toggleFilter } from "../../Redux-store/productSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { db } from "../../config/firebase";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
+import CardSkelton from "../Cards/CardSkelton";
 
 const sortOptions = [
   { name: "Top Rated", value: "ratings", current: false },
@@ -28,6 +29,7 @@ export default function ProductList({ apiUrl }) {
   const category = useSelector((state) => state.productSlice.category);
   const filters = [brand, category];
   const [sort, setSort] = useState("ratings");
+  const numberOfSkeletons = 18;
 
   useEffect(() => {
     if (apiUrl === "All") {
@@ -194,8 +196,9 @@ export default function ProductList({ apiUrl }) {
 
               {/* Product grid */}
               <div className='lg:col-span-3 lg:gap-10 custum-scroll overflow-y-scroll w-full h-screen flex flex-wrap'>
-                {sortedData.length == 0 ? (
-                  <h2 className='text-xl'>No Products Found</h2>
+                {sortedData.length === 0 ? (Array.from({ length: numberOfSkeletons }, (_, index) => (
+                  <CardSkelton key={index} />
+                ))
                 ) : (
                   sortedData.map((item) => (
                     <div key={item.id}>

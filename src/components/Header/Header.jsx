@@ -7,24 +7,22 @@ import SearchBar from "../SearchBar/SearchBar";
 import Cart from "../Cart/Cart";
 import ProfileDropDown from "./ProfileDropDown";
 import { auth } from "../../config/firebase";
-import {  getUserData } from "../../Redux-store/authSlice";
-
+import { getUserData } from "../../Redux-store/authSlice";
 
 export default function Header() {
   const [menuState, setMenuState] = useState(false);
   const authStatus = useSelector((state) => state.authSlice.authStatus);
   const product = useSelector((state) => state.cartSlice.data);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
-  
-  useEffect(()=>{
-   auth.onAuthStateChanged((user)=>{
-    if(user){
-      // dispatch(getAuthStatus(true))
-      dispatch(getUserData({uid:user.uid, username:user.displayName, email:user.email}))
-    }
-  })
-},[])
+
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        dispatch(getUserData({ uid: user.uid, username: user.displayName, email: user.email }));
+      }
+    });
+  }, []);
 
   const cartClickHandler = () => {
     setOpen(true);
@@ -110,10 +108,14 @@ export default function Header() {
             <div className='lg:block hidden'>
               <SearchBar />
             </div>
-            <div className='relative -top-3 h-8 w-8'>
+            <div className='relative -top-4 right-0 h-8 w-8'>
               <span className='relative flex top-2 left-6 h-4 w-4'>
-                <span className='animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75'></span>
-                <span className='relative inline-flex items-center justify-center rounded-full h-4 w-4 border-2 border-red-800 text-sm text-red-500 bg-white'>{product.length}</span>
+                {product.length > 0 && (
+                  <>
+                    <span className='animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75'></span>
+                    <span className='relative inline-flex items-center justify-center rounded-full h-4 w-4 border-2 border-red-800 text-sm text-red-500 bg-white'>{product.length}</span>
+                  </>
+                )}
               </span>
               <ShoppingCartIcon onClick={cartClickHandler} className='cursor-pointer h-auto w-auto text-gray-700' />
             </div>
