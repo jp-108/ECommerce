@@ -1,6 +1,7 @@
 import { ChevronDoubleDownIcon, ChevronDoubleUpIcon } from "@heroicons/react/24/outline";
 import React, { useEffect, useState, useCallback } from "react";
-import { useSelector } from "react-redux";
+import { increaseQty, decreaseQty, removeItem } from "../../Redux-store/cartSlice";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const InputElement = React.memo(({ type, name, id, className, value, onChange, placeholder = "", ...props }) => {
@@ -22,7 +23,7 @@ function Checkout() {
     district: "",
     pincode: "",
   });
-
+const dispatch = useDispatch()
   const hasPincodeData = pincodeData && pincodeData.length > 0;
 
   const handleInputChange = useCallback((inputType, e) => {
