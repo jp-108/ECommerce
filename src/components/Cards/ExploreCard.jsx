@@ -3,6 +3,7 @@ import bgMensImage from "../../assets/mens-collection.png"
 import bgWomensImage from "../../assets/womens-collection.png"
 import bgKidsImage from "../../assets/kids-collection.png"
 import bgShoesImage from "../../assets/shoes-collection.png"
+import { Link } from "react-router-dom";
 
 
 function ExploreCard() {
@@ -14,7 +15,7 @@ function ExploreCard() {
           <div className='absolute inset-0 bg-gray-900 bg-opacity-50'>
             <div className='flex flex-col items-center justify-center p-2 text-gray-100'>
               <div className='font-bold text-4xl m-2 mt-[170px] text-center'>
-                <a href=''>Man's Collection</a>
+                <Link to='/products/Mens'>Man's Collection</Link>
               </div>
               <div className=' m-2 text-sm'></div>
             </div>
@@ -25,7 +26,7 @@ function ExploreCard() {
             <div className='flex flex-col items-center justify-center p-2 text-gray-100'>
               <div className='font-bold text-4xl m-2 mt-[170px] text-center'>
                 {" "}
-                <a href=''>Women's Collection</a>
+                <Link to='/products/Women'>Women's Collection</Link>
               </div>
               <div className=' m-2 text-sm'></div>
             </div>
@@ -36,7 +37,7 @@ function ExploreCard() {
             <div className='flex flex-col items-center justify-center p-2 text-gray-100'>
               <div className='font-bold text-4xl m-2 mt-[170px] text-center'>
                 {" "}
-                <a href=''>Kids's Collection</a>
+                <Link to="/products/Kids">Kids's Collection</Link>
               </div>
               <div className=' m-2 text-sm'></div>
             </div>
@@ -47,7 +48,7 @@ function ExploreCard() {
             <div className='flex flex-col items-center justify-center p-2 text-gray-100'>
               <div className='font-bold text-4xl m-2 mt-[170px] text-center'>
                 {" "}
-                <a href=''>Shoes</a>
+                <Link to="/products/Shoes">Shoes</Link>
               </div>
               <div className=' m-2 text-sm'></div>
             </div>

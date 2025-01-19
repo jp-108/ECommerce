@@ -11,10 +11,12 @@ export default function Cart({ open, setOpen }) {
   const dispatch = useDispatch();
 
   const qtyId = (id) => {
-    return item.filter((item) => (item._id == id ? item.qty : null))[0].qty;
+    return item.find((item)=> item._id === id).qty
   };
 
-  let total = 0;
+  let totals = cartItems.reduce((acc, curr)=>{
+    return acc + curr.price * qtyId(curr.id) 
+  }, 0 )
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -45,12 +47,8 @@ export default function Cart({ open, setOpen }) {
                         <div className='flow-root'>
                           <ul role='list' className='-my-6 divide-y divide-gray-200'>
                             {cartItems.map((item) => {
-                              const itemQty = cartItems.find((p) => p.id === item.id);
-                              // Calculate total for each item
-                              itemQty ? (total += item.price * qtyId(item.id)) : null;
-
-                              return (
-                                <li key={item.id} className='flex py-6'>
+                              console.log(qtyId(item.id))
+                              return (<li key={item.id} className='flex py-6'>
                                   <div className='h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200'>
                                     <img src={item.images[0]} alt={item.title} className='h-full w-full object-cover object-center' />
                                   </div>
@@ -96,7 +94,7 @@ export default function Cart({ open, setOpen }) {
                     <div className='border-t border-gray-200 px-4 py-6 sm:px-6'>
                       <div className='flex justify-between text-base font-medium text-gray-900'>
                         <p>Subtotal</p>
-                        <p>${total}</p>
+                        <p>${totals}</p>
                       </div>
                       <p className='mt-0.5 text-sm text-gray-500'>Shipping and taxes calculated at checkout.</p>
                       <div className='mt-6'>

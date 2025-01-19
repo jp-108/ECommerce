@@ -92,7 +92,7 @@ function Product() {
                     <span className='m-1 py-1 text-center text-sm text-red-600 font-medium '>({item.discountPercentage}% OFF)</span>
                   </div>
                   <div className='flex'>
-                    <button onClick={() => dispatch(addToCart(item))} className='flex text-white bg-blue-950 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded'>
+                    <button onClick={() => dispatch(addToCart({...item, id:params.id}))} className='flex text-white bg-blue-950 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded'>
                       Add to cart
                     </button>
                     <button className='rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4'>
