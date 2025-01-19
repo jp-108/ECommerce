@@ -80,7 +80,7 @@ const Carousel = ({ images, timeDuration }) => {
         ))}
       </div>
       <div className='relative w-screen bottom-24 flex justify-center z-10'>
-        <Link to='/products/all' className='absolute  px-5 bg-slate-500/50 py-1 border-2 animate-bounce rounded-lg shadow-lg shadow-slate-800  text-white'>
+        <Link to='/products/All' className='absolute  px-5 bg-slate-500/50 py-1 border-2 animate-bounce rounded-lg shadow-lg shadow-slate-800  text-white'>
           Shop Now
         </Link>
       </div>
